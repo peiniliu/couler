@@ -38,6 +38,7 @@ class Workflow(object):
         self.cron_config = None
         self.volumes = []
         self.pvcs = []
+        self.service_account_name = None
 
     def add_template(self, template: Template):
         self.templates.update({template.name: template})
@@ -114,6 +115,10 @@ class Workflow(object):
         #     d["metadata"]["labels"] = {"couler_job_user": self.user_id}
 
         workflow_spec = {"entrypoint": entrypoint}
+        if self.service_account_name:
+            workflow_spec.update(
+                {"serviceAccountName": self.service_account_name}
+            )
         if self.volumes:
             workflow_spec.update({"volumes": self.volumes})
         if self.pvcs:

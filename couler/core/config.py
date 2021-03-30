@@ -23,6 +23,7 @@ def config_workflow(
     time_to_clean=None,
     cluster_config_file=None,
     cron_config=None,
+    service_account_name=None,
 ):
     """
     Config some workflow-level information.
@@ -45,6 +46,9 @@ def config_workflow(
 
     if time_to_clean is not None:
         states.workflow.clean_ttl = time_to_clean
+
+    if service_account_name is not None:
+        states.workflow.service_account_name = service_account_name
 
     if cluster_config_file is not None:
         import os
