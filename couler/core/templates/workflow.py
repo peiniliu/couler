@@ -39,6 +39,7 @@ class Workflow(object):
         self.volumes = []
         self.pvcs = []
         self.service_account = None
+        self.security_context = None
 
     def add_template(self, template: Template):
         self.templates.update({template.name: template})
@@ -56,7 +57,7 @@ class Workflow(object):
 
     def has_pvc_template(self, name):
         for pvc in self.pvcs:
-            if pvc['metadata']['name'] == name:
+            if pvc["metadata"]["name"] == name:
                 return True
         return False
 
@@ -65,7 +66,7 @@ class Workflow(object):
 
     def has_volume(self, name):
         for volume in self.volumes:
-            if volume['name'] == name:
+            if volume["name"] == name:
                 return True
         return False
 
@@ -127,6 +128,15 @@ class Workflow(object):
         #     d["metadata"]["labels"] = {"couler_job_user": self.user_id}
 
         workflow_spec = {"entrypoint": entrypoint}
+        if self.security_context:
+            workflow_spec["securityContext"] = dict()
+            for key, value in self.security_context.items():
+                workflow_spec["securityContext"][key] = value
+
+        if self.volumes:
+            workflow_spec.update({"volumes": self.volumes})
+        if self.pvcs:
+            workflow_spec.update({"volumeClaimTemplates": self.pvcs})
         if self.dag_mode_enabled():
             dag = {"tasks": list(self.dag_tasks.values())}
             ts = [OrderedDict({"name": entrypoint, "dag": dag})]
@@ -167,18 +177,21 @@ class Workflow(object):
                             "Unsupported signature for cluster spec: %s" % sig
                         )
             ts.append(template_dict)
-            #check volumes
-            volume_mounts = template.get_volume_mounts()
-            if volume_mounts is not None:
-                for volume_mount in volume_mounts:
-                    if self.has_pvc_template(volume_mount.name) is False and self.has_volume(volume_mount.name) is False:
-                        #autogenerate emptydir volume
-                        self.volumes.append(
-                            {"name": volume_mount.name, "emptyDir": {}}
-                        )
+            # check volumes
+            if isinstance(template, Container) or isinstance(template, Script):
+                volume_mounts = template.get_volume_mounts()
+                if volume_mounts is not None:
+                    for volume_mount in volume_mounts:
+                        if (
+                            self.has_pvc_template(volume_mount.name) is False
+                            and self.has_volume(volume_mount.name) is False
+                        ):
+                            # Auto-generate emptyDir volume
+                            self.volumes.append(
+                                {"name": volume_mount.name, "emptyDir": {}}
+                            )
 
         if self.volumes:
-            print(self.volumes)
             workflow_spec.update({"volumes": self.volumes})
         if self.pvcs:
             workflow_spec.update({"volumeClaimTemplates": self.pvcs})
@@ -233,6 +246,11 @@ class Workflow(object):
     def config_cron_workflow(self, cron_config):
         self.cron_config = cron_config
 
+    def set_security_context(self, security_context: dict):
+        if not isinstance(security_context, dict):
+            raise TypeError("security_context should be a dict")
+        self.security_context = security_context
+
     def cleanup(self):
         self.name = None
         self.timeout = None
@@ -248,3 +266,4 @@ class Workflow(object):
         self.volumes = []
         self.pvcs = []
         self.service_account = None
+        self.security_context = None
