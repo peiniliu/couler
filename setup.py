@@ -52,7 +52,7 @@ with io.open(os.path.join("couler", "_version.py")) as fp:
     exec(fp.read(), version)
 
 setup(
-    name="couler",
+    name="couler-scanflow",
     description="Unified Interface for Constructing and Managing Workflows",
     long_description="Unified Interface for"
     " Constructing and Managing Workflows",
