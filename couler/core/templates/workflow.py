@@ -250,8 +250,6 @@ class Workflow(object):
         else:
             d["spec"] = workflow_spec
 
-        print("WORKFLOW!!")
-        print(d)
         return d
 
     def config_cron_workflow(self, cron_config):

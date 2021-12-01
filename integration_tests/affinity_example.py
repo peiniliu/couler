@@ -33,6 +33,7 @@ if __name__ == "__main__":
             time_to_clean=3600 * 1.5,
             service_account="argo",
             affinity={
+                "pod_affinity": None,
                 "pod_anti_affinity": {
                     "required_during_scheduling_ignored_during_execution": {
                         "label_selector": [
@@ -48,7 +49,7 @@ if __name__ == "__main__":
                         ],
                         "topology_key": "kubernetes.io/hostname",
                     }
-                }
+                },
             },
         )
         # 2) Add a container to the workflow.

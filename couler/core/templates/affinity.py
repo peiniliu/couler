@@ -17,14 +17,8 @@ from collections import OrderedDict
 class Affinity(object):
     def __init__(self, affinity: dict):
         print(affinity)
-        try:
-            self.pod_affinity = affinity["pod_affinity"]
-        finally:
-            self.pod_affinity = None
-        try:
-            self.pod_anti_affinity = affinity["pod_anti_affinity"]
-        finally:
-            self.pod_anti_affinity = None
+        self.pod_affinity = affinity["pod_affinity"]
+        self.pod_anti_affinity = affinity["pod_anti_affinity"]
         if self.pod_affinity:
             self.key = affinity["pod_affinity"][
                 "required_during_scheduling_ignored_during_execution"

@@ -133,6 +133,7 @@ class ArgoSubmitter(object):
 
     def _create_workflow(self, workflow_yaml):
         yaml_str = pyaml.dump(workflow_yaml)
+        print(yaml_str)
         workflow_yaml = yaml.safe_load(yaml_str)
         logging.info("Submitting workflow to Argo")
         try:
