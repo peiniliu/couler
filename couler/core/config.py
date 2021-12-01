@@ -24,6 +24,7 @@ def config_workflow(
     cluster_config_file=None,
     cron_config=None,
     service_account=None,
+    affinity=None,
 ):
     """
     Config some workflow-level information.
@@ -87,6 +88,9 @@ def config_workflow(
 
     if service_account is not None:
         states.workflow.service_account = service_account
+
+    if affinity is not None:
+        states.workflow.add_affinity(affinity)
 
 
 def _config_cron_workflow(

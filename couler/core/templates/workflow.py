@@ -16,6 +16,7 @@ from inspect import getfullargspec
 
 from couler.core import utils
 from couler.core.templates import Container, Job, Script, Step, Template
+from couler.core.templates.affinity import Affinity
 from couler.core.templates.volume import Volume
 from couler.core.templates.volume_claim import VolumeClaimTemplate
 
@@ -40,6 +41,11 @@ class Workflow(object):
         self.pvcs = []
         self.service_account = None
         self.security_context = None
+        self.affinity = OrderedDict()
+
+    def add_affinity(self, affinity: dict):
+        affinityobj = Affinity(affinity=affinity)
+        self.affinity = affinityobj.to_dict()
 
     def add_template(self, template: Template):
         self.templates.update({template.name: template})
@@ -217,6 +223,9 @@ class Workflow(object):
         if self.service_account is not None:
             workflow_spec["serviceAccountName"] = self.service_account
 
+        if self.affinity is not None:
+            workflow_spec["affinity"] = self.affinity
+
         # Spec part
         if self.cluster_config is not None and hasattr(
             self.cluster_config, "config_workflow"
@@ -241,6 +250,8 @@ class Workflow(object):
         else:
             d["spec"] = workflow_spec
 
+        print("WORKFLOW!!")
+        print(d)
         return d
 
     def config_cron_workflow(self, cron_config):
@@ -267,3 +278,4 @@ class Workflow(object):
         self.pvcs = []
         self.service_account = None
         self.security_context = None
+        self.affinity = None
