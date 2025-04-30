@@ -16,7 +16,6 @@ from couler.tests.argo_yaml_test import ArgoYamlTest
 
 _test_data_dir = "test_data"
 
-
 class CronJobTest(ArgoYamlTest):
     def test_cron_workflow(self):
         def tails():

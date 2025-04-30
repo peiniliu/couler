@@ -99,7 +99,7 @@ def _config_cron_workflow(
     successful_jobs_history_limit=3,  # Default 3
     failed_jobs_history_limit=1,  # Default 1
     starting_deadline_seconds=10,
-    suspend="false",
+    suspend='"false"',
     timezone="Asia/Shanghai",  # Default to Beijing time
 ):
     """
@@ -116,5 +116,7 @@ def _config_cron_workflow(
         "suspend": suspend,
         "timezone": timezone,
     }
+
+    print(cron_config)
 
     states.workflow.config_cron_workflow(cron_config)
